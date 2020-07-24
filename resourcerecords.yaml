@@ -3,6 +3,7 @@
   hosts: localhost
   gather_facts: no
   vars:
+    www_redirect: 94.136.40.82
     login_info: &login_info
       project: "{{ gcp_project }}"
       auth_kind: "{{ gcp_cred_kind }}"
@@ -36,3 +37,33 @@
           - 5 ALT2.ASPMX.L.GOOGLE.com.
           - 10 ASPMX2.GOOGLEMAIL.com.
           - 10 ASPMX3.GOOGLEMAIL.com.
+
+    - name: create SPF record
+      gcp_dns_resource_record_set:
+        <<: *login_info
+        name: "{{ managed_zone.dnsName }}"
+        managed_zone: "{{ managed_zone }}"
+        type: TXT
+        ttl: 14400
+        target:
+          - google-site-verification=g1zFaSmahKSCH-iFeO-Y2DjhadHuap9yAIARfM6ubxg
+
+    - name: create root A record
+      gcp_dns_resource_record_set:
+        <<: *login_info
+        name: "{{ managed_zone.dnsName }}"
+        managed_zone: "{{ managed_zone }}"
+        type: A
+        ttl: 14400
+        target:
+          - "{{ www_redirect }}"
+
+    - name: create www A record
+      gcp_dns_resource_record_set:
+        <<: *login_info
+        name: "www.{{ managed_zone.dnsName }}"
+        managed_zone: "{{ managed_zone }}"
+        type: A
+        ttl: 14400
+        target:
+          - "{{ www_redirect }}"
