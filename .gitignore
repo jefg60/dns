@@ -1,0 +1,8 @@
+gcpcreds
+venv
+*.swp
+__pycache__
+*.pyc
+.vagrant
+*.log
+roles
