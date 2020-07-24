@@ -14,13 +14,19 @@
         <<: *login_info
         name: jeffhibberddotcom
         dns_name: jeffhibberd.com.
+        description: jeffhibberd.com managed zone
         state: present
       register: managed_zone
+
+    - name: debug managed_zone var
+      debug:
+        var: managed_zone
+        verbosity: 1
 
     - name: create MX records
       gcp_dns_resource_record_set:
         <<: *login_info
-        name: @
+        name: "{{ managed_zone.dnsName }}"
         managed_zone: "{{ managed_zone }}"
         type: MX
         ttl: 14400
